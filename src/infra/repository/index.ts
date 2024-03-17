@@ -1,5 +1,7 @@
 import { WalletRepositoryInMemory } from "./mock/WalletRepositoryInMemory";
 import { OperationRepositoryInMemory } from "./mock/OperationRepositoryInMemory";
+import { WalletRepositoryDatabase } from "./database/WalletRepositoryDatabase";
+import { OperationRepositoryDatabase } from "./database/OperationRepositoryDatabase";
 
 export interface IRepository<T> {
 	get(id: string, relations?: string[]): Promise<T | null>;
@@ -7,4 +9,9 @@ export interface IRepository<T> {
 	listByIds(ids: string[]): Promise<T[] | null>;
 }
 
-export { WalletRepositoryInMemory, OperationRepositoryInMemory };
+export {
+	WalletRepositoryInMemory,
+	OperationRepositoryInMemory,
+	WalletRepositoryDatabase,
+	OperationRepositoryDatabase,
+};

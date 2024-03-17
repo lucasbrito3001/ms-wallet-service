@@ -10,7 +10,10 @@ import {
 describe("[Domain - Operation]", () => {
 	test("should create a new balance addition operation", () => {
 		const input = new MockInputOperation();
-		const operation = Operation.createBalanceAddition(input);
+		const operation = Operation.createBalanceAddition(
+			input.amount,
+			input.walletId
+		);
 
 		expect(operation.id).toBeDefined();
 		expect(operation.createdAt).toBeDefined();
@@ -21,7 +24,10 @@ describe("[Domain - Operation]", () => {
 
 	test("should create a new order payment operation", () => {
 		const input = new MockInputOperation();
-		const operation = Operation.createOrderPayment(input);
+		const operation = Operation.createOrderPayment(
+			input.amount,
+			input.walletId
+		);
 
 		expect(operation.id).toBeDefined();
 		expect(operation.createdAt).toBeDefined();

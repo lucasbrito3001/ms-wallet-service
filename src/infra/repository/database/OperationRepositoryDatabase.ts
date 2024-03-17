@@ -3,13 +3,36 @@ import {
 	OperationOperator,
 	OperationType,
 } from "@/domain/entities/Operation";
-import { RepositoryDatabase } from ".";
-import { Repository } from "typeorm";
+import { In, Repository } from "typeorm";
 import { OperationEntity } from "../entity/Operation.entity";
+import { OperationRepository } from "@/application/repository/OperationRepository";
 
-export class OperationRepositoryDatabase extends RepositoryDatabase<Operation> {
-	constructor(repository: Repository<OperationEntity>) {
-		super(repository);
+export class OperationRepositoryDatabase implements OperationRepository {
+	constructor(private readonly repository: Repository<OperationEntity>) {}
+
+	async save(operation: Operation): Promise<void> {
+		await this.repository.save(operation);
+	}
+
+	async get(id: string, relations: string[]): Promise<Operation | null> {
+		const entity = await this.repository.findOne({
+			where: { id },
+			relations,
+		});
+
+		if (!entity) return null;
+
+		return this.instanceDomain(entity);
+	}
+
+	async listByIds(ids: string[]): Promise<Operation[] | null> {
+		const entities = await this.repository.find({
+			where: { id: In(ids) },
+		});
+
+		if (entities.length === 0) return null;
+
+		return entities.map((entity) => this.instanceDomain(entity));
 	}
 
 	instanceDomain(entity: OperationEntity): Operation {

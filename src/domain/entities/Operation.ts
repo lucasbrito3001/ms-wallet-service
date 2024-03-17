@@ -1,5 +1,4 @@
 import { BaseDomain } from "../Base";
-import { Wallet } from "./Wallet";
 
 export enum OperationType {
 	BalanceAddition = "BALANCE_ADDITION",
@@ -13,14 +12,33 @@ export enum OperationOperator {
 
 export class Operation extends BaseDomain {
 	private constructor(
-		public id: string,
-		public amount: number,
-		public walletId: string,
-		public createdAt: string,
-		public operationType: OperationType,
-		public operationOperator: OperationOperator
+		private _id: string,
+		private _amount: number,
+		private _walletId: string,
+		private _createdAt: string,
+		private _operationType: OperationType,
+		private _operationOperator: OperationOperator
 	) {
 		super();
+	}
+
+	public get id() {
+		return this._id;
+	}
+	public get amount() {
+		return this._amount;
+	}
+	public get walletId() {
+		return this._walletId;
+	}
+	public get createdAt() {
+		return this._createdAt;
+	}
+	public get operationType() {
+		return this._operationType;
+	}
+	public get operationOperator() {
+		return this._operationOperator;
 	}
 
 	static instance = (
@@ -41,28 +59,28 @@ export class Operation extends BaseDomain {
 		);
 	};
 
-	static createBalanceAddition = (operationInput: any): Operation => {
+	static createBalanceAddition = (amount: number, walletId: string): Operation => {
 		const uuid = this.generateUUID();
 		const createdAt = new Date().toISOString();
 
 		return new Operation(
 			uuid,
-			operationInput.amount,
-			operationInput.walletId,
+			amount,
+			walletId,
 			createdAt,
 			OperationType.BalanceAddition,
 			OperationOperator.Increment
 		);
 	};
 
-	static createOrderPayment = (operationInput: any): Operation => {
+	static createOrderPayment = (amount: number, walletId: string): Operation => {
 		const uuid = this.generateUUID();
 		const createdAt = new Date().toISOString();
 
 		return new Operation(
 			uuid,
-			operationInput.amount,
-			operationInput.walletId,
+			amount,
+			walletId,
 			createdAt,
 			OperationType.OrderPayment,
 			OperationOperator.Decrement

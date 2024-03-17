@@ -8,10 +8,8 @@ export class WalletEntity {
 	id?: string;
 	@Column("decimal", { precision: 7, scale: 2 })
 	balance?: number;
-	@Column("datetime")
+	@Column("datetime", { nullable: false })
 	createdAt?: string;
 	@OneToOne(() => AccountEntity, (account) => account.wallet)
 	account?: AccountEntity;
-	@OneToMany(() => OperationEntity, (operation) => operation.walletId)
-	operations?: OperationEntity[];
 }

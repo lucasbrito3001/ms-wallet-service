@@ -4,41 +4,58 @@ import { WalletRepository } from "../repository/WalletRepository";
 import { OperationRepository } from "../repository/OperationRepository";
 import { Operation } from "@/domain/entities/Operation";
 import { Wallet } from "@/domain/entities/Wallet";
-import { WalletNotFoundError } from "@/error/WalletError";
+import {
+	NegativeOperationValueError,
+	WalletNotFoundError,
+} from "@/error/WalletError";
+import { UnexpectedError } from "@/error/ErrorBase";
 
 export class AddBalanceOutput {
 	constructor(public balance: number, public operationId: string) {}
 }
 
 export interface AddBalancePort {
-	execute(input: OperationInput): Promise<AddBalanceOutput>;
+	execute(
+		input: OperationInput
+	): Promise<
+		AddBalanceOutput | NegativeOperationValueError | WalletNotFoundError
+	>;
 }
 
 export class AddBalance implements AddBalancePort {
-	private readonly operationRepository: OperationRepository;
 	private readonly walletRepository: WalletRepository;
 
 	constructor(registry: DependencyRegistry) {
-		this.operationRepository = registry.inject("operationRepository");
 		this.walletRepository = registry.inject("walletRepository");
 	}
 
-	async execute(input: OperationInput): Promise<AddBalanceOutput> {
-		const wallet = await this.walletRepository.get(input.walletId, [
-			"operations",
-		]);
+	async execute(
+		input: OperationInput
+	): Promise<
+		AddBalanceOutput | NegativeOperationValueError | WalletNotFoundError
+	> {
+		try {
+			const wallet = await this.walletRepository.get(input.walletId, [
+				"operations",
+			]);
 
-		if (!wallet) throw new WalletNotFoundError();
+			if (!wallet) return new WalletNotFoundError();
 
-		const operation = Operation.createBalanceAddition(input);
-		const increasedWallet = Wallet.addBalanceAdditionOperation(
-			wallet,
-			operation
-		);
+			const operation = Operation.createBalanceAddition(
+				input.amount,
+				input.walletId
+			);
+			const resultAddBalance = wallet.addBalanceAdditionOperation(operation);
 
-		await this.operationRepository.save(operation);
-		await this.walletRepository.save(increasedWallet);
+			if (resultAddBalance instanceof NegativeOperationValueError)
+				return resultAddBalance;
 
-		return new AddBalanceOutput(increasedWallet.balance, operation.id);
+			await this.walletRepository.save(wallet);
+
+			return new AddBalanceOutput(wallet.balance, operation.id);
+		} catch (error) {
+			console.log(error);
+			return new UnexpectedError();
+		}
 	}
 }

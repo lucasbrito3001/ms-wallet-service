@@ -1,5 +1,4 @@
-import { Column, Entity, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
-import { OperationEntity } from "./Operation.entity";
+import { Column, Entity, OneToOne, PrimaryColumn } from "typeorm";
 import { WalletEntity } from "./Wallet.entity";
 
 @Entity("account")

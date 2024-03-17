@@ -5,7 +5,7 @@ export type BaseType = {
 };
 
 export class RepositoryInMemory<T extends BaseType> implements IRepository<T> {
-	private repository: T[] = [];
+	protected repository: T[] = [];
 
 	constructor(initialRepository: T[]) {
 		this.repository = initialRepository;

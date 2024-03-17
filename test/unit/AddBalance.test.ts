@@ -1,5 +1,10 @@
 import { beforeEach, describe, expect, test } from "vitest";
-import { MockInputOperation, MockInputWallet } from "../constants";
+import {
+	MockAccount,
+	MockInputOperation,
+	MockInputWallet,
+	fakeId,
+} from "../constants";
 import { AddBalance, AddBalanceOutput } from "@/application/usecase/AddBalance";
 import { DependencyRegistry } from "@/infra/DependencyRegistry";
 import { Wallet } from "@/domain/entities/Wallet";
@@ -8,6 +13,7 @@ import {
 	WalletRepositoryInMemory,
 } from "@/infra/repository";
 import { WalletNotFoundError } from "@/error/WalletError";
+import { Account } from "@/domain/entities/Account";
 
 describe("[UseCase - AddBalance]", () => {
 	let useCase: AddBalance;
@@ -28,20 +34,23 @@ describe("[UseCase - AddBalance]", () => {
 		useCase = new AddBalance(registry);
 	});
 
-	test("should return WalletNotFound error, when the wallet don't exists", () => {
+	test("should return WalletNotFound error, when the wallet don't exists", async () => {
 		const input = new MockInputOperation(100, "bad-wallet-id");
 
-		const fn = () => useCase.execute(input);
+		const result = await useCase.execute(input);
 
-		expect(fn).rejects.toThrow(WalletNotFoundError);
+		expect(result).toBeInstanceOf(WalletNotFoundError);
 	});
 
 	test("should add balance to wallet successfully", async () => {
-		const wallet = Wallet.create(new MockInputWallet(10));
+		const account = Account.create(new MockAccount());
+		const wallet = Wallet.create(10, account);
+
 		await walletRepository.save(wallet);
+
 		const input = new MockInputOperation(100, wallet.id);
 
-		const response = await useCase.execute(input);
+		const response = (await useCase.execute(input)) as AddBalanceOutput;
 
 		expect(response).toBeInstanceOf(AddBalanceOutput);
 		expect(response.balance).toBeDefined();

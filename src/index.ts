@@ -20,7 +20,7 @@ const webServer = new WebServer(dataSourceConnection, queueAdapter, logger);
 	process.on(signal, (err) => {
 		console.log(`[${signal.toUpperCase()}]: ${err}`);
 		webServer.gracefulShutdown();
-		process.exit(1);
+		process.exit(143);
 	})
 );
 

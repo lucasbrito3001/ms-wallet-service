@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: wallet-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql_vol:/var/lib/mysql
+    networks:
+      - wallet-network
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: wallet-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:15672"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - wallet-network
+
+  wallet-service:
+    container_name: wallet-service
+    build: .
+    command: ["npm", "run", "start:dev"]
+    environment:
+      - DS_HOST=mysql
+      - DS_USER=root
+      - DS_PASS=root
+      - DS_DATABASE=ms_wallet_library
+      - PORT=3000
+      - AMQP_DEV_CONNECTION_STRING=amqp://guest:guest@rabbitmq:5672
+      - AMQP_E2E_CONNECTION_STRING=amqp://guest:guest@localhost:5672
+    volumes:
+      - .:/app
+    ports:
+      - "3000:3000"
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 10s
+      timeout: 2s
+      retries: 3
+    depends_on:
+      - mysql
+      - rabbitmq
+    networks:
+      - wallet-network
+
+volumes:
+  mysql_vol:
+    driver: local
+  rabbitmq_vol:
+    driver: local
+
+networks:
+  wallet-network:
+    driver: bridge
