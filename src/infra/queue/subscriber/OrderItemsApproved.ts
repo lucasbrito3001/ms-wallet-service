@@ -15,14 +15,14 @@ export class OrderItemsApprovedSub implements QueueSubscriber {
 	private logger: Logger;
 
 	constructor(readonly registry: DependencyRegistry) {
-		this.useCase = registry.inject("registerItemCopy");
+		this.useCase = registry.inject("payOrder");
 		this.logger = registry.inject("logger");
 	}
 
-	private logMessage = (bookId: string): void => {
+	private logMessage = (orderId: string): void => {
 		this.logger.logEvent(
-			"BookStocked",
-			`Adding book ${bookId} to the database`
+			"OrderItemsApproved",
+			`Order items approved, starting to pay the order: ${orderId}`
 		);
 	};
 

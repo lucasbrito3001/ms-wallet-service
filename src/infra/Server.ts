@@ -27,6 +27,8 @@ import { OperationRepositoryDatabase } from "./repository/database/OperationRepo
 import { OperationEntity } from "./repository/entity/Operation.entity";
 import { ZodSchemaValidator } from "./ZodSchemaValidator";
 import { OperationInputSchema } from "@/application/schema/input/OperationInput";
+import { OrderItemsApprovedSub } from "./queue/subscriber/OrderItemsApproved";
+import { AccountCreatedSub } from "./queue/subscriber/AccountCreated";
 
 export class WebServer {
 	private server: Server | undefined;
@@ -100,8 +102,12 @@ export class WebServer {
 	}
 
 	private setQueueControllerSubscribers = (registry: DependencyRegistry) => {
-		const subs: QueueSubscriber[] = [];
+		const subs: QueueSubscriber[] = [
+			new OrderItemsApprovedSub(registry),
+			new AccountCreatedSub(registry),
+		];
 
+		console.log("");
 		new QueueController(registry).appendSubscribers(subs);
 	};
 

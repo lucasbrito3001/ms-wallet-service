@@ -1,4 +1,3 @@
-import { Wallet } from "@/domain/entities/Wallet";
 import { describe, expect, test } from "vitest";
 import { MockInputOperation } from "../constants";
 import {

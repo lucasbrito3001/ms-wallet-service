@@ -1,5 +1,6 @@
 import { WalletRepositoryInMemory } from "./mock/WalletRepositoryInMemory";
 import { OperationRepositoryInMemory } from "./mock/OperationRepositoryInMemory";
+import { AccountRepositoryInMemory } from "./mock/AccountRepositoryInMemory";
 import { WalletRepositoryDatabase } from "./database/WalletRepositoryDatabase";
 import { OperationRepositoryDatabase } from "./database/OperationRepositoryDatabase";
 
@@ -14,4 +15,5 @@ export {
 	OperationRepositoryInMemory,
 	WalletRepositoryDatabase,
 	OperationRepositoryDatabase,
+	AccountRepositoryInMemory
 };
