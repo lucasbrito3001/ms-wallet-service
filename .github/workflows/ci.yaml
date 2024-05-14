@@ -2,7 +2,7 @@ name: pipeline_ci
 run-name: Pipeline CI - v1.0
 
 on:
-  pull-request:
+  pull_request:
     branches:
       - dev
 
