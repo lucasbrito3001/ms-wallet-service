@@ -24,7 +24,7 @@ jobs:
       - name: Run tests:
         run: npm run test
 
-  build-push-image:
+  build-push-docker-image:
     runs-on: ubuntu-latest
     environment: dev
     steps:
