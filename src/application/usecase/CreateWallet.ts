@@ -15,9 +15,11 @@ export interface CreateWalletPort {
 
 export class CreateWallet implements CreateWalletPort {
 	private readonly walletRepository: WalletRepository;
+	private readonly accountRepository: AccountRepository;
 
 	constructor(registry: DependencyRegistry) {
 		this.walletRepository = registry.inject("walletRepository");
+		this.accountRepository = registry.inject("accountRepository");
 	}
 
 	async execute(
@@ -33,6 +35,7 @@ export class CreateWallet implements CreateWalletPort {
 			const account = Account.instance(message);
 			const wallet = Wallet.create(0, account);
 
+			await this.accountRepository.save(account);
 			await this.walletRepository.save(wallet);
 
 			return;

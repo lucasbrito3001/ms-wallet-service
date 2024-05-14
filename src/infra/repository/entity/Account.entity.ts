@@ -7,6 +7,4 @@ export class AccountEntity {
 	id?: string;
 	@Column("varchar")
 	email?: string;
-	@OneToOne(() => WalletEntity, (wallet) => wallet.account)
-	wallet?: WalletEntity;
 }

@@ -4,8 +4,7 @@ import { BaseDomain } from "../Base";
 export class Account extends BaseDomain {
 	private constructor(
 		private _id: string,
-		private _email: string,
-		private _cpf: string
+		private _email: string
 	) {
 		super();
 	}
@@ -16,21 +15,17 @@ export class Account extends BaseDomain {
 	public get email() {
 		return this._email;
 	}
-	public get cpf() {
-		return this._cpf;
-	}
 
 	static create(accountInput: AccountInput) {
 		const uuid = this.generateUUID();
 
-		return new Account(uuid, accountInput.email, accountInput.cpf);
+		return new Account(uuid, accountInput.email);
 	}
 
 	static instance(accountInput: AccountInput) {
 		return new Account(
 			accountInput.accountId,
-			accountInput.email,
-			accountInput.cpf
+			accountInput.email
 		);
 	}
 

@@ -9,14 +9,15 @@ import {
 	expect,
 	test,
 } from "vitest";
-import { MockInputOperation, MockInputWallet } from "../constants";
+import { MockAccount, MockInputOperation, MockInputWallet } from "../constants";
 import { WebServer } from "@/infra/Server";
-import { DataSourceConnection } from "@/infra/DataSource";
+import { DataSourceConnection } from "@/infra/data/DataSource";
 import { GeneralLogger } from "@/infra/log/GeneralLogger";
 import { RabbitMQAdapter } from "@/infra/queue/RabbitMQAdapter";
 import { WalletEntity } from "@/infra/repository/entity/Wallet.entity";
 import { Wallet } from "@/domain/entities/Wallet";
 import { WalletRepositoryDatabase } from "@/infra/repository/database/WalletRepositoryDatabase";
+import { Account } from "@/domain/entities/Account";
 
 describe("[e2e - AddBalance]", () => {
 	const logger = new GeneralLogger();
@@ -26,7 +27,8 @@ describe("[e2e - AddBalance]", () => {
 	let webServer: WebServer;
 	let dataSourceConnection: DataSourceConnection;
 
-	const wallet: Wallet = Wallet.create(new MockInputWallet());
+	const account: Account = Account.create(new MockAccount());
+	const wallet: Wallet = Wallet.create(100, account);
 
 	beforeAll(async () => {
 		dataSourceConnection = new DataSourceConnection();
@@ -79,7 +81,7 @@ describe("[e2e - AddBalance]", () => {
 		const walletRepo = new WalletRepositoryDatabase(
 			dataSourceConnection.getRepository(WalletEntity)
 		);
-        
+
 		await walletRepo.save(wallet);
 
 		const input = new MockInputOperation(100, wallet.id);

@@ -33,25 +33,37 @@ services:
     networks:
       - wallet-network
 
+  elasticsearch:
+    image: elasticsearch:8.12.2
+    container_name: wallet-elasticsearch
+    environment:
+      node.name: elastic01
+      discovery.type: single-node
+    volumes:
+      - elasticdata:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - wallet-network
+
   wallet-service:
     container_name: wallet-service
     build: .
     command: ["npm", "run", "start:dev"]
     environment:
-      - DS_HOST=mysql
-      - DS_USER=root
-      - DS_PASS=root
-      - DS_DATABASE=ms_wallet_library
-      - PORT=3000
-      - AMQP_DEV_CONNECTION_STRING=amqp://guest:guest@rabbitmq:5672
-      - AMQP_E2E_CONNECTION_STRING=amqp://guest:guest@localhost:5672
+      PORT: 3000
+      MORGAN_LOG_TYPE: dev
+      DB_CONNECTION_STRING: mysql://root:root@mysql:3306/ms_wallet_service
+      AMQP_CONNECTION_STRING: amqp://guest:guest@rabbitmq:5672
+      QUEUE_ACCOUNT_CREATED_RETRIES: 1
     volumes:
       - .:/app
     ports:
       - "3000:3000"
     restart: always
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:3000/healthy"]
       interval: 10s
       timeout: 2s
       retries: 3
@@ -65,6 +77,8 @@ volumes:
   mysql_vol:
     driver: local
   rabbitmq_vol:
+    driver: local
+  elasticdata:
     driver: local
 
 networks:

@@ -1,6 +1,13 @@
-import { Column, Entity, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
-import { OperationEntity } from "./Operation.entity";
+import {
+	Column,
+	Entity,
+	JoinColumn,
+	OneToMany,
+	OneToOne,
+	PrimaryColumn,
+} from "typeorm";
 import { AccountEntity } from "./Account.entity";
+import { OperationEntity } from "./Operation.entity";
 
 @Entity("wallet")
 export class WalletEntity {
@@ -10,6 +17,11 @@ export class WalletEntity {
 	balance?: number;
 	@Column("datetime", { nullable: false })
 	createdAt?: string;
-	@OneToOne(() => AccountEntity, (account) => account.wallet)
+	@OneToOne(() => AccountEntity)
+	@JoinColumn()
 	account?: AccountEntity;
+	@OneToMany(() => OperationEntity, (operation) => operation.walletId, {
+		cascade: ["insert", "update"],
+	})
+	operations?: OperationEntity[];
 }

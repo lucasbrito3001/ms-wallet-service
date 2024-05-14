@@ -1,5 +1,5 @@
 import express, { Express, NextFunction, Request, Response } from "express";
-import { DataSourceConnection } from "./DataSource";
+import { DataSourceConnection } from "./data/DataSource";
 import { Server } from "http";
 import { DependencyRegistry } from "./DependencyRegistry";
 import { QueueController } from "./queue/QueueController";
@@ -29,6 +29,11 @@ import { ZodSchemaValidator } from "./ZodSchemaValidator";
 import { OperationInputSchema } from "@/application/schema/input/OperationInput";
 import { OrderItemsApprovedSub } from "./queue/subscriber/OrderItemsApproved";
 import { AccountCreatedSub } from "./queue/subscriber/AccountCreated";
+import { PayOrder } from "@/application/usecase/PayOrder";
+import { CreateWallet } from "@/application/usecase/CreateWallet";
+import { AccountEntity } from "./repository/entity/Account.entity";
+import { AccountRepositoryDatabase } from "./repository/database/AccountRepositoryDatabase copy";
+import morgan from "morgan";
 
 export class WebServer {
 	private server: Server | undefined;
@@ -43,6 +48,7 @@ export class WebServer {
 	start = async (isTest: boolean) => {
 		this.app.use(express.json());
 		this.app.use(cors());
+		this.app.use(morgan(process.env.MORGAN_LOG_TYPE as string));
 
 		try {
 			await this.dataSourceConnection.initialize();
@@ -62,11 +68,9 @@ export class WebServer {
 		this.setQueueControllerSubscribers(registry);
 
 		// Exception handler middleware
-		this.app.use(
-			(err: Error, req: Request, res: Response, next: NextFunction): void => {
-				return new UncaughtExceptionHandler(res, this.logger).handle(err);
-			}
-		);
+		this.app.use((err: Error, _: Request, res: Response): void => {
+			return new UncaughtExceptionHandler(res, this.logger).handle(err);
+		});
 
 		if (isTest) return this.app;
 
@@ -74,6 +78,7 @@ export class WebServer {
 			this.logger.log(
 				`\n[SERVER] Server started, listening on port: ${process.env.PORT}\n`
 			);
+			this.logger.log("================================================\n");
 		});
 	};
 
@@ -83,6 +88,9 @@ export class WebServer {
 		const walletRepository = new WalletRepositoryDatabase(
 			this.dataSourceConnection.getRepository(WalletEntity)
 		);
+		const accountRepository = new AccountRepositoryDatabase(
+			this.dataSourceConnection.getRepository(AccountEntity)
+		);
 		const operationRepository = new OperationRepositoryDatabase(
 			this.dataSourceConnection.getRepository(OperationEntity)
 		);
@@ -91,8 +99,11 @@ export class WebServer {
 			.push("queue", this.queue)
 			.push("logger", this.logger)
 			.push("walletRepository", walletRepository)
+			.push("accountRepository", accountRepository)
 			.push("operationRepository", operationRepository)
 			.push("addBalance", new AddBalance(registry))
+			.push("payOrder", new PayOrder(registry))
+			.push("createWallet", new CreateWallet(registry))
 			.push(
 				"addOperationSchemaValidation",
 				new ZodSchemaValidator(OperationInputSchema)
@@ -119,8 +130,9 @@ export class WebServer {
 
 		this.app.use("/", router);
 
-		this.app.get("/healthy", (_, res) => {
+		this.app.get("/healthy", (_, res, next) => {
 			res.send("Hello world!");
+			res.end();
 		});
 	};
 

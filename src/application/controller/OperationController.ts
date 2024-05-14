@@ -39,6 +39,7 @@ export class OperationController {
 			const output = await this._addBalance.execute(input);
 
 			res.status(200).json(output);
+			res.end();
 
 			return;
 		} catch (error) {
@@ -50,7 +51,5 @@ export class OperationController {
 		req: Request,
 		res: Response,
 		next: NextFunction
-	): Promise<void> => {
-		
-	};
+	): Promise<void> => {};
 }

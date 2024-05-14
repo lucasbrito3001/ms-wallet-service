@@ -5,12 +5,9 @@ import {
 	EntityTarget,
 	ObjectLiteral,
 } from "typeorm";
-import { GeneralLogger } from "./log/GeneralLogger";
-import { Logger } from "./log/Logger";
+import { GeneralLogger } from "../log/GeneralLogger";
+import { Logger } from "../log/Logger";
 import { join } from "path";
-import { WalletEntity } from "./repository/entity/Wallet.entity";
-import { OperationEntity } from "./repository/entity/Operation.entity";
-import { AccountEntity } from "./repository/entity/Account.entity";
 
 type DataSourceErrorNames =
 	| "BAD_DATASOURCE_CONFIG"
@@ -44,25 +41,13 @@ export class DataSourceConnection {
 	getConfig(): DataSourceOptions | undefined {
 		const options: DataSourceOptions = {
 			type: "mysql",
-			port: 3306,
-			host: process.env.DS_HOST || "",
-			username: process.env.DS_USER || "",
-			password: process.env.DS_PASS || "",
-			database: process.env.DS_DATABASE || "",
-			entities: [join(__dirname, "repository", "entity", "*.entity.ts")],
-			// synchronize: process.env.NODE_ENV !== "prd",
-			logging: process.env.NODE_ENV !== "prd",
+			url: process.env.DB_CONNECTION_STRING || "",
+			entities: [join(__dirname, "..", "repository", "entity", "*.entity.ts")],
+			synchronize: process.env.NODE_ENV !== "prd",
+			// logging: process.env.NODE_ENV !== "prd",
 		};
 
-		const optionsTest: DataSourceOptions = {
-			type: "sqlite",
-			database: ":memory:",
-			dropSchema: true,
-			synchronize: true,
-			entities: [WalletEntity, OperationEntity, AccountEntity],
-		};
-
-		const config = process.env.NODE_ENV === "e2e" ? optionsTest : options;
+		const config = options;
 
 		if (Object.values(config).some((opt) => !opt)) return undefined;
 

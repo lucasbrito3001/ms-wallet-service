@@ -8,6 +8,6 @@ export class WalletRouter extends AppRouter {
 	}
 
 	expose(): void {
-		this.router.get("/check_balance/:id", this.controller.checkBalance);
+		this.router.get("/check_balance/:walletId", this.controller.checkBalance);
 	}
 }

@@ -1,5 +1,5 @@
 export class DependencyRegistry {
-	dependencies: Map<string, any> = new Map();
+	private dependencies: Map<string, any> = new Map();
 
 	push(name: string, dependency: any): this {
 		this.dependencies.set(name, dependency);

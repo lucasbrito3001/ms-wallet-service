@@ -1,7 +1,6 @@
 import { DependencyRegistry } from "@/infra/DependencyRegistry";
 import { WalletRepository } from "../repository/WalletRepository";
 import { OrderItemsApprovedMessage } from "@/infra/queue/subscriber/OrderItemsApproved";
-import { OperationRepository } from "../repository/OperationRepository";
 import {
 	InsufficientBalanceError,
 	NegativeOperationValueError,
@@ -18,11 +17,9 @@ export interface PayOrderPort {
 
 export class PayOrder implements PayOrderPort {
 	private readonly walletRepository: WalletRepository;
-	private readonly operationRepository: OperationRepository;
 
 	constructor(registry: DependencyRegistry) {
 		this.walletRepository = registry.inject("walletRepository");
-		this.operationRepository = registry.inject("operationRepository");
 	}
 
 	async execute(
@@ -34,7 +31,9 @@ export class PayOrder implements PayOrderPort {
 		| void
 	> {
 		try {
-			const wallet = await this.walletRepository.getByAccountId(message.accountId);
+			const wallet = await this.walletRepository.getByAccountId(
+				message.accountId
+			);
 
 			if (wallet === null) return new WalletNotFoundError();
 

@@ -1,5 +1,5 @@
 # Stage 1: Build stage
-FROM node:18-alpine AS build
+FROM node:18.24.1-alpine AS build
 
 WORKDIR /app
 
@@ -16,7 +16,13 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Runtime stage
-FROM node:18-alpine
+FROM node:18.24.1-alpine
+
+ENV PORT="3000"
+ENV MORGAN_LOG_TYPE="dev"
+ENV DB_CONNECTION_STRING="mysql://user:pass@host:port/database"
+ENV AMQP_CONNECTION_STRING="amqp://user:pass@host:port/vhost"
+ENV QUEUE_ACCOUNT_CREATED_RETRIES="2"
 
 WORKDIR /app
 
@@ -25,13 +31,17 @@ COPY --from=build /app/dist ./dist
 COPY package*.json ./
 
 # Install only production dependencies
-RUN npm ci --omit=dev
+RUN npm ci --production
 
-# Create uploads directory
-RUN mkdir /tmp/uploads
+# Remove npm cache to reduce image size
+RUN npm cache clean --force
 
 # Expose the port your app runs on
 EXPOSE 3000
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:${PORT}/healthy || exit 1
 
 # Command to run your application
 CMD ["npm", "start"]

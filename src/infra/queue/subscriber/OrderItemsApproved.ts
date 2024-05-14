@@ -11,6 +11,7 @@ export type OrderItemsApprovedMessage = {
 
 export class OrderItemsApprovedSub implements QueueSubscriber {
 	public readonly queueName = "orderItemsApproved";
+	public readonly retries = 2;
 	private readonly useCase: PayOrderPort;
 	private logger: Logger;
 

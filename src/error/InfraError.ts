@@ -17,3 +17,9 @@ export class InvalidInputError extends ErrorBase {
 		super("INVALID_INPUT", "The input is invalid", 400, cause);
 	}
 }
+
+export class MissingEnvVariableError extends ErrorBase {
+	constructor(variable: string) {
+		super("MISSING_ENV_VARIABLE", `Missing the env variable: ${variable}`, 500);
+	}
+}

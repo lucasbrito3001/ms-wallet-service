@@ -5,3 +5,4 @@ export abstract class AppRouter {
 
 	abstract expose(): void;
 }
+
