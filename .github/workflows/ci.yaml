@@ -43,4 +43,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ env.DOCKERHUB_USERNAME }}/${{ github.repository.name }}:latest, ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.repository.name }}:$GITHUB_SHA
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.repository.name }}:latest, ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.repository.name }}:$GITHUB_SHA
