@@ -43,4 +43,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: $GITHUB_REPOSITORY:latest, $GITHUB_REPOSITORY:$GITHUB_SHA
+          tags: ${{  github.repository }}:latest, ${{  github.repository }}:$GITHUB_SHA
