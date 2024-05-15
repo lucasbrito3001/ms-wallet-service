@@ -6,6 +6,9 @@ on:
     branches:
       - dev
 
+env:
+  REPO_NAME: ${$GITHUB_REPOSITORY##*/}
+
 jobs:
   run-unit-tests:
     runs-on: ubuntu-latest
