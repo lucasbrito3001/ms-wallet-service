@@ -7,7 +7,7 @@ on:
       - dev
 
 env:
-  REPO_NAME: ${$GITHUB_REPOSITORY##*/}
+  REPO_NAME: "${GITHUB_REPOSITORY#*/}"
 
 jobs:
   run-unit-tests:
