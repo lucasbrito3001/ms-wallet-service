@@ -45,6 +45,12 @@ jobs:
           push: true
           tags: ${{  github.repository }}:latest, ${{  github.repository }}:${{ github.sha }}
 
+      - name: Save .env file
+        run: |
+          touch .env
+
+          echo ${{ secrets.WALLET_ENV_FILE }} >> .env
+
       - name: Auth to GCP
         id: "auth"
         uses: "google-github-actions/auth@v2"
@@ -58,4 +64,4 @@ jobs:
           instance_name: "services-instance"
           zone: "us-east1-b"
           ssh_private_key: "${{ secrets.SSH_PRIVATE_KEY }}"
-          command: "docker logs --tail 100 nginx"
+          command: "docker run -p 3000:3000 --env-file ./.env ${{  github.repository }}:${{ github.sha }}"
