@@ -56,6 +56,6 @@ jobs:
         uses: "google-github-actions/ssh-compute@v1"
         with:
           instance_name: "services-instance"
-          zone: "us-east1-a"
+          zone: "us-east1-b"
           ssh_private_key: "${{ secrets.SSH_PRIVATE_KEY }}"
           command: "docker logs --tail 100 nginx"
