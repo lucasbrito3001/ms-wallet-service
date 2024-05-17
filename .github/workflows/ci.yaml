@@ -44,3 +44,18 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{  github.repository }}:latest, ${{  github.repository }}:${{ github.sha }}
+
+      - name: Auth to GCP
+        id: "auth"
+        uses: "google-github-actions/auth@v2"
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}
+
+      - name: SSH to GCE
+        id: "compute-ssh"
+        uses: "google-github-actions/ssh-compute@v1"
+        with:
+          instance_name: "services-instance"
+          zone: "us-east1-a"
+          ssh_private_key: "${{ secrets.SSH_PRIVATE_KEY }}"
+          command: "docker logs --tail 100 nginx"
