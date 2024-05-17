@@ -64,4 +64,4 @@ jobs:
           instance_name: "services-instance"
           zone: "us-east1-b"
           ssh_private_key: "${{ secrets.SSH_PRIVATE_KEY }}"
-          command: "docker run -p 3000:3000 --env-file ./.env ${{  github.repository }}:${{ github.sha }}"
+          command: "docker run -p 3000:3000 --env-file /home/lucasvagasest/lucasbrito3001/ms-wallet-service/.env ${{  github.repository }}:${{ github.sha }}"
