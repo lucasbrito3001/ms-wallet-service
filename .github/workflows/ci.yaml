@@ -45,11 +45,11 @@ jobs:
           push: true
           tags: ${{  github.repository }}:latest, ${{  github.repository }}:${{ github.sha }}
 
-      - name: Save .env file
+      - name: Get service name
         run: |
-          touch .env
+          SERVICE_NAME=$(echo ${{ github.repository }} | cut -c 15-)
 
-          echo ${{ secrets.WALLET_ENV_FILE }} >> .env
+          echo "SERVICE_NAME=$SERVICE_NAME" >> $GITHUB_ENV
 
       - name: Auth to GCP
         id: "auth"
@@ -64,4 +64,4 @@ jobs:
           instance_name: "services-instance"
           zone: "us-east1-b"
           ssh_private_key: "${{ secrets.SSH_PRIVATE_KEY }}"
-          command: "docker stop wallet-service || true && docker rm wallet-service || true && docker run -d -p 3000:3000 --rm --name wallet-service --network infra-tools-library_mynetwork --env-file /home/lucasvagasest/lucasbrito3001/ms-wallet-service/.env ${{  github.repository }}:${{ github.sha }}"
+          command: "docker stop ${{ env.SERVICE_NAME }} || true && docker rm ${{ env.SERVICE_NAME }} || true && docker run -d -p 3000:3000 --name ${{ env.SERVICE_NAME }} --network infra-tools-library_mynetwork --env-file /var/env/${{ env.SERVICE_NAME }}.env ${{  github.repository }}:${{ github.sha }}"
