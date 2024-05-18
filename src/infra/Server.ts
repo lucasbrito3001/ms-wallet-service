@@ -53,6 +53,7 @@ export class WebServer {
 		try {
 			await this.dataSourceConnection.initialize();
 		} catch (error) {
+			console.log(error);
 			throw new DatabaseConnectionError(error as any);
 		}
 
