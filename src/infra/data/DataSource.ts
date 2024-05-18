@@ -49,6 +49,8 @@ export class DataSourceConnection {
 
 		const config = options;
 
+		console.log(config)
+
 		if (Object.values(config).some((opt) => !opt)) return undefined;
 
 		return config;
