@@ -30,4 +30,7 @@ const webServer = new WebServer(dataSourceConnection, queueAdapter, logger);
 if (!process.env.MORGAN_LOG_TYPE)
 	throw new MissingEnvVariableError("MORGAN_LOG_TYPE");
 
+if (!process.env.DB_CONNECTION_STRING)
+	throw new MissingEnvVariableError("DB_CONNECTION_STRING");
+
 webServer.start(false);
