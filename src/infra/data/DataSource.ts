@@ -44,12 +44,10 @@ export class DataSourceConnection {
 			url: process.env.DB_CONNECTION_STRING || "",
 			entities: [join(__dirname, "..", "repository", "entity", "*.entity.ts")],
 			synchronize: process.env.NODE_ENV !== "prd",
-			// logging: process.env.NODE_ENV !== "prd",
+			logging: process.env.NODE_ENV !== "prd",
 		};
 
 		const config = options;
-
-		if (Object.values(config).some((opt) => !opt)) return undefined;
 
 		return config;
 	}

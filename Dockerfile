@@ -41,7 +41,7 @@ EXPOSE 3000
 
 # Healthcheck
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:${PORT}/healthy || exit 1
+    CMD wget -O /dev/null -o /dev/null http://localhost:${PORT}/healthy || exit 1
 
 # Command to run your application
 CMD ["npm", "start"]
